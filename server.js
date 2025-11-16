@@ -1,61 +1,30 @@
-// routes/openai.mjs
+// server.js
 import express from "express";
-import OpenAI from "openai";
-import verifyFirebase from "./middleware/verifyFirebase.js";
-app.use("/api/openai", verifyFirebase, openaiRoutes);
+import cors from "cors";
+import openaiRoutes from "./routes/openai.mjs"; // make sure this path matches your file
 
-const router = express.Router();
+const app = express();
+const PORT = process.env.PORT || 5050;
 
-// 🔹 Simple test route: no auth, just checks server & key
-router.get("/test", (req, res) => {
-  const key = process.env.OPENAI_API_KEY;
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "*",
+  })
+);
 
-  if (!key) {
-    return res.json({
-      ok: false,
-      message: "Missing OPENAI_API_KEY in environment",
-    });
-  }
+app.use(express.json());
 
-  return res.json({
-    ok: true,
-    message: "COOKIE SERVER OpenAI route is live ✅",
-    keyLength: key.length,
-  });
+// Simple root route so we can see the server is alive
+app.get("/", (req, res) => {
+  res.send("COOKIE server is live");
 });
 
-// 🔹 Main chat route (protected – requires JWT from mobile app)
-router.post("/chat", verifyToken, async (req, res) => {
-  try {
-    const { message } = req.body;
+// Attach OpenAI routes (NO auth middleware for now)
+app.use("/api/openai", openaiRoutes);
 
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: "You are COOKIE, a friendly chat assistant." },
-        { role: "user", content: message },
-      ],
-    });
-
-    const reply = completion.choices[0]?.message?.content || "";
-
-    return res.json({ reply });
-  } catch (err) {
-    console.error("OpenAI error:", err);
-    return res
-      .status(500)
-      .json({ error: "Failed to connect to COOKIE AI server." });
-  }
+app.listen(PORT, () => {
+  console.log(`COOKIE SERVER running on port ${PORT}`);
 });
 
-export default router;
-
+export default app;
 
