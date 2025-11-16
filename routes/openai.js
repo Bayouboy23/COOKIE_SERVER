@@ -1,6 +1,6 @@
 import express from "express";
 import { chatWithCookie } from "../controllers/openaiController.js";
-import verifyToken from "../middleware/verifyToken.js";
+import verifyToken from "../middleware/verifyFirebase.js";
 
 const router = express.Router();
 

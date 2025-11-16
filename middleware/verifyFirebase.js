@@ -16,5 +16,5 @@ function verifyToken(req, res, next) {
   next();
 }
 
-export default verifyToken;
+export default verifyFirebase;
 
