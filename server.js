@@ -1,7 +1,7 @@
 // server.js
 import express from "express";
 import cors from "cors";
-import openaiRoutes from "./routes/openai.mjs"; // make sure this path matches your file
+import openaiRoutes from "./routes/openai.js"; // make sure this path matches your file
 
 const app = express();
 const PORT = process.env.PORT || 5050;
