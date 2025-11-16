@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "0c1afc85-ca73-4b80-8628-3b201198b487"
+      }
+    },
+    "expo"
+    "ios": {
+      "bundleIdentifier": "com.cookieai.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}
