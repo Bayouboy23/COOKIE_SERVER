@@ -21,7 +21,9 @@ app.get("/", (req, res) => {
 
 // Attach OpenAI routes (NO auth middleware for now)
 app.use("/api/openai", openaiRoutes);
-
+app.get("/test", (req, res) => {
+  res.json({ message: "Server is running" });
+});
 app.listen(PORT, () => {
   console.log(`COOKIE SERVER running on port ${PORT}`);
 });
