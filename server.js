@@ -1,8 +1,7 @@
 // routes/openai.mjs
 import express from "express";
 import OpenAI from "openai";
-import verifyToken from "../middleware/auth.mjs";
-
+import verifyToken from "./middleware/verifyToken.js";
 const router = express.Router();
 
 // 🔹 Simple test route: no auth, just checks server & key
