@@ -1,42 +1,60 @@
+// routes/openai.mjs
 import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import authRoutes from "./routes/auth.mjs";
-import openaiRoutes from "./routes/openai.mjs";
+import OpenAI from "openai";
+import verifyToken from "../middleware/auth.mjs";
 
-dotenv.config();
+const router = express.Router();
 
-const app = express();
-
-app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
-app.use(express.json());
-
-// ✅ DEBUG ROUTE — required for fixing the API key issue
-app.get("/debug/env", (req, res) => {
+// 🔹 Simple test route: no auth, just checks server & key
+router.get("/test", (req, res) => {
   const key = process.env.OPENAI_API_KEY;
 
   if (!key) {
-    return res.json({ openaiKey: "MISSING" });
+    return res.json({
+      ok: false,
+      message: "Missing OPENAI_API_KEY in environment",
+    });
   }
 
   return res.json({
-    openaiKey: "LOADED",
-    length: key.length,
+    ok: true,
+    message: "COOKIE SERVER OpenAI route is live ✅",
+    keyLength: key.length,
   });
 });
 
-// API ROUTES
-app.use("/api/auth", authRoutes);
-app.use("/api/openai", openaiRoutes);
+// 🔹 Main chat route (protected – requires JWT from mobile app)
+router.post("/chat", verifyToken, async (req, res) => {
+  try {
+    const { message } = req.body;
 
-app.get("/", (req, res) => {
-  res.send("COOKIE SERVER is running!");
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    const completion = await client.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        { role: "system", content: "You are COOKIE, a friendly chat assistant." },
+        { role: "user", content: message },
+      ],
+    });
+
+    const reply = completion.choices[0]?.message?.content || "";
+
+    return res.json({ reply });
+  } catch (err) {
+    console.error("OpenAI error:", err);
+    return res
+      .status(500)
+      .json({ error: "Failed to connect to COOKIE AI server." });
+  }
 });
 
-// SERVER START
-const PORT = process.env.PORT || 5050;
+export default router;
 
-app.listen(PORT, () =>
-  console.log(`COOKIE SERVER running on port ${PORT}`)
-);
 

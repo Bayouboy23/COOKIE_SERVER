@@ -1,8 +1,9 @@
 import express from "express";
-import { chatWithCookie } from "../controllers/openaiController.js";
-import { verifyToken } from "../middleware/verifyToken.js";
-
 const router = express.Router();
-router.post("/chat", verifyToken, chatWithCookie);
+
+router.get("/test", (req, res) => {
+  res.json({ message: "OpenAI route is live" });
+});
 
 export default router;
+
